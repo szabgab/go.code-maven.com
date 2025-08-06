@@ -45,7 +45,7 @@ func check_examples(root string, examples *[]string) int {
 	names := make(map[string]string)
 // TODO: should filename be using underscores intsead of dashes?
 	errors := 0
-	path := filepath.Join(root, "examples")
+	path := filepath.Join(root, "books/golang/src/examples")
 	dirs, err := ioutil.ReadDir(path)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
@@ -121,7 +121,7 @@ func check_file(filepath string) int {
 
 func check_examples_dir(root string) int {
 	errors := 0
-	path := filepath.Join(root, "examples")
+	path := filepath.Join(root, "books/goolang/src/examples")
 	dirs, err := ioutil.ReadDir(path)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
