@@ -3,31 +3,31 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"os"
-	"strings"
-	"path/filepath"
 	"io/ioutil"
-	"regexp"
 	"log"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 // TODO: Check if every file in the examples/ directory is being imported in the .md files.
 
 func main() {
 	log.Println("Checking Go started")
-	root := "golang"
+	root := "books/golang"
 
 	var imports = make([]string, 0)
 	var examples = make([]string, 0)
 
 	errors := 0
 	errors += check_file(filepath.Join("tests", "check.go"))
-	errors += check_main_dir(root, &imports)
+	errors += collect_list_of_imported_files(root, &imports)
 	errors += check_examples_dir(root)
-	errors += check_examples(root, &examples)
+	errors += collect_and_check_examples(root, &examples)
 
-	//fmt.Println(imports)
-	//fmt.Println(examples)
+	//panic(fmt.Sprintln(imports))
+	//panic(fmt.Sprintln(examples))
 	// TODO check if there is anything in examples that is not in imports
 	errors += countMissing(examples, imports)
 
@@ -39,13 +39,17 @@ func main() {
 	os.Exit(0)
 }
 
-func check_examples(root string, examples *[]string) int {
+// Find all the example file (.go files in the examples folder)
+// Verify that each file is in our standard using the check_file function
+// Return the number of errors encountered.
+func collect_and_check_examples(root string, examples *[]string) int {
+	log.Printf("collect_and_check_examples(%v)", root)
 	validExampleFilename := regexp.MustCompile(`^[a-z0-9_.]+$`)
 	// We make sure filenames are unique across the examples.
 	names := make(map[string]string)
-// TODO: should filename be using underscores intsead of dashes?
+	// TODO: should filename be using underscores intsead of dashes?
 	errors := 0
-	path := filepath.Join(root, "books/golang/src/examples")
+	path := filepath.Join(root, "src/examples")
 	dirs, err := ioutil.ReadDir(path)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
@@ -79,7 +83,7 @@ func check_examples(root string, examples *[]string) int {
 				continue
 			}
 			//*examples = append(*examples, dir.Name() + "/" + file.Name())
-			*examples = append(*examples, fmt.Sprintf("%q", dir.Name() + "/" + file.Name()))
+			*examples = append(*examples, fmt.Sprintf("%q", dir.Name()+"/"+file.Name()))
 			names[file.Name()] = dir.Name()
 			if strings.HasSuffix(file.Name(), ".go") {
 				errors += check_file(filepath.Join(path, dir.Name(), file.Name()))
@@ -92,36 +96,37 @@ func check_examples(root string, examples *[]string) int {
 
 // If there is a .go file check if the indentation is always tabs
 func check_file(filepath string) int {
-	//log.Println(filepath)
+	//log.Printf("check_file(%v)", filepath)
 	errors := 0
 	fh, err := os.Open(filepath)
 	if err != nil {
-		fmt.Printf("Error: %v", err)
+		fmt.Printf("Error. Could not open file %v: %v", filepath, err)
 		os.Exit(1)
 	}
 	reader := bufio.NewReader(fh)
 	for true {
-	   line, _ := reader.ReadString('\n')
-			if strings.HasSuffix(line, " ") {
-				fmt.Printf("Space suffix in file '%v' line: '%v'\n", filepath, line)
-				errors++
-			}
-			if strings.HasPrefix(line, " ") {
-				fmt.Printf("Space prefix in file '%v' line: '%v'\n", filepath, line)
-				errors++
-			}
+		line, _ := reader.ReadString('\n')
+		if strings.HasSuffix(line, " ") {
+			fmt.Printf("Space suffix in file '%v' line: '%v'\n", filepath, line)
+			errors++
+		}
+		if strings.HasPrefix(line, " ") {
+			fmt.Printf("Space prefix in file '%v' line: '%v'\n", filepath, line)
+			errors++
+		}
 
-	   if (line == "") {
-		   break
-	   }
+		if line == "" {
+			break
+		}
 	}
 
 	return errors
 }
 
 func check_examples_dir(root string) int {
+	log.Printf("check_examples_dir(%v)", root)
 	errors := 0
-	path := filepath.Join(root, "books/goolang/src/examples")
+	path := filepath.Join(root, "src/examples")
 	dirs, err := ioutil.ReadDir(path)
 	if err != nil {
 		fmt.Printf("Error: %v", err)
@@ -142,18 +147,24 @@ func check_examples_dir(root string) int {
 	return errors
 }
 
-func check_main_dir(root string, imports *[]string) int {
+func collect_list_of_imported_files(root string, imports *[]string) int {
+	//log.Printf("collect_list_of_imported_files(%v)", root)
 	errors := 0
 	files, err := ioutil.ReadDir(root)
 	if err != nil {
-		fmt.Printf("Error: %v", err)
+		fmt.Printf("Error could not open dir '%v': %v", root, err)
 		os.Exit(1)
 	}
 	for _, file := range files {
-		if file.Name() == ".vscode" || file.Name() == "examples" || file.Name() == "golang.json" {
+		//log.Printf("Parsing file '%v'", file.Name())
+		if file.Name() == ".vscode" || file.Name() == "examples" || file.Name() == "golang.json" || file.Name() == "book.toml" {
 			continue
 		}
-		if ! strings.HasSuffix(file.Name(), ".md") {
+		if file.IsDir() {
+			errors += collect_list_of_imported_files(filepath.Join(root, file.Name()), imports)
+			continue
+		}
+		if !strings.HasSuffix(file.Name(), ".md") {
 			fmt.Printf("Unrecognized entry: %v\n", file.Name())
 			errors++
 		}
@@ -167,13 +178,16 @@ func check_main_dir(root string, imports *[]string) int {
 		}
 		// ![](examples/variable-scope/scope.go)
 		//importFilename := regexp.MustCompile(`^!\[\]\(examples/([a-z-]+/[a-z_.])\)\s*\n?$`)
-		importFilename := regexp.MustCompile(`^!\[\]\(examples/([a-z0-9-/_.]+)\)?$`)
+		//importFilename := regexp.MustCompile(`^!\[\]\(examples/([a-z0-9-/_.]+)\)?$`)
+		// {% embed include file="src/examples/declare-multiple-variables/declare_multiple_variables.go" %}
+		importFilename := regexp.MustCompile(`\{% embed include file="src/examples/([a-z0-9/_.-]+)" %\}\s*$`)
 		scanner := bufio.NewScanner(fh)
 		for scanner.Scan() {
 			line := scanner.Text()
 			//fmt.Println(line)
 			res := importFilename.FindAllSubmatch([]byte(line), -1)
 			//fmt.Println(len(res))
+			//panic(fmt.Sprintf("import '%v':  %v", filename, res))
 			if len(res) > 0 {
 				importPath := fmt.Sprintf("%q", res[0][1])
 				*imports = append(*imports, importPath)
