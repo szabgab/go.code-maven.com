@@ -20,8 +20,11 @@ jobs:
     - name: Checkout this repo
       uses: actions/checkout@v7
 
-    - name: Go Tests
+    - name: Go Version
       run: |
          go version
+
+    - name: Go Tests
+      run: |
          go run tests/check.go
 
