@@ -2,6 +2,6 @@
 
 * println
 
-{% embed include file="src/examples/println/println.go)
+{% embed include file="src/examples/println/println.go" %}
 
 

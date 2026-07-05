@@ -1,6 +1,6 @@
 # Reading CSV file
 
-{% embed include file="src/examples/read-csv/process_csv_file.csv)
+{% embed include file="src/examples/read-csv/process_csv_file.csv" %}
 
 * Sum the numbers in the 3rd column
 

@@ -4,9 +4,9 @@ Implement the wc command of Unix/Linux: Given a name of file print out the numbe
 
 Given multiple file, print out the values for each file and then print out the totals for all the files.
 
-{% embed include file="src/examples/wc/one.txt)
+{% embed include file="src/examples/wc/one.txt" %}
 
-{% embed include file="src/examples/wc/two.txt)
+{% embed include file="src/examples/wc/two.txt" %}
 
 ```
  2   5  24 one.txt

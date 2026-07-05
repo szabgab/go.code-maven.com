@@ -2,7 +2,7 @@
 
 Given a text file like this one:
 
-{% embed include file="src/examples/count-words-from-file/words_and_spaces.txt)
+{% embed include file="src/examples/count-words-from-file/words_and_spaces.txt" %}
 
 * Print out a report how many times each word appears.
 * Disregard case of the letters.

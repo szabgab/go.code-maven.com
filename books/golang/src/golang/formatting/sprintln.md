@@ -2,6 +2,6 @@
 
 * sprintln
 
-{% embed include file="src/examples/sprintln/sprintln.go)
+{% embed include file="src/examples/sprintln/sprintln.go" %}
 
 

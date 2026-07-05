@@ -3,6 +3,6 @@
 * sprintf
 * %v
 
-{% embed include file="src/examples/sprintf/sprintf.go)
+{% embed include file="src/examples/sprintf/sprintf.go" %}
 
 

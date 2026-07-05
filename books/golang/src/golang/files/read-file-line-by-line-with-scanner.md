@@ -10,6 +10,6 @@
 
 {% embed include file="src/examples/read-file-with-scanner/read_file_with_scanner.go" %}
 
-{% embed include file="src/examples/read-file-with-scanner/random.txt)
+{% embed include file="src/examples/read-file-with-scanner/random.txt" %}
 
 
