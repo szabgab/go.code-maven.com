@@ -23,5 +23,10 @@ What you'll learn:
 
 [Miki Tebeka](https://www.linkedin.com/in/mikitebeka/)
 
+Miki has been shipping bugs to production for close to 30 years.
+Miki is a [Python & Go expert](https://353solutions.com/) who teaches and speaks all over the world, and has written technical books and many online courses.
+Miki loves open source, and has contributions in both the Go and Python worlds.
+He's also one of the organizers of [GopherCon Israel](https://www.gophercon.org.il/), the [Go Israel meetup](https://www.meetup.com/go-israel/), and the [PyData Israel conference](https://pydata.org/telaviv2025).
+When not shouting at coding agents, Miki likes to hike, read books, climb and annoy his kids.
 
 <a class="button is-primary" href="https://luma.com/8yrcaydg">register</a>
