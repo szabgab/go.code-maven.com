@@ -5,4 +5,4 @@ published: true
 description: Welcome to the Python Maven, the site that will help you programming in Python.
 ---
 
-* [Go](/go/)
+* [Go](/golang/)
